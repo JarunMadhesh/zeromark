@@ -1,18 +1,19 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 
 class Topic {
   String topic;
   String audioName;
-  String modelName;
+  Color model;
 
-  Topic(this.topic, this.audioName, this.modelName);
+  Topic(this.topic, this.audioName, this.model);
 }
 
 class TopicProvider with ChangeNotifier{
   List<Topic> _topics = [
-    Topic("Windmill", "wind.mp3", "Windmill.3mf"),
-    Topic("Atoms", "atom.mp3", "atom.gltf"),
-    Topic("Space shuttle", "Space.mp3", "Space.glb")
+    Topic("Sun", "sun.mp3", Colors.deepOrange),
+    Topic("Jupiter", "jupiter.mp3", Color(0xffe36e4b)),
+    Topic("Uranus", "uranus.mp3", Colors.blueGrey)
   ];
 
   List<Topic> get topicList {
@@ -23,7 +24,7 @@ class TopicProvider with ChangeNotifier{
     return "assets/audios/"+_topics[i].audioName;
   }
 
-  String modelPath(int i) {
-    return "assets/models/"+_topics[i].modelName;
+  Color modelPath(int i) {
+    return _topics[i].model;
   }
 }

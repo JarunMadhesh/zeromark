@@ -19,6 +19,7 @@ class _ARPageState extends State<ARPage> {
   String title = "asd";
   String path = "";
   String path2 = "";
+  Color _color = Colors.white;
 
   @override
   initState() {
@@ -61,23 +62,26 @@ class _ARPageState extends State<ARPage> {
 
   _addSphere(List<ArCoreHitTestResult> hits) {
     final hit = hits.first;
-    try {
-      arCoreController.addArCoreNodeWithAnchor(
-        ArCoreReferenceNode(
-          name: "Modal",
-          object3DFileName: path2,
-          position: hit.pose.translation,
-          rotation: hit.pose.rotation,
-        ),
-      );
-    } catch (e) {
-      showDialog(
-        context: context,
-        builder: (ctx) => AlertDialog(
-          content: Text(e),
-        ),
-      );
-    }
+    // arCoreController.addArCoreNodeWithAnchor(
+    //   ArCoreReferenceNode(
+    //     name: "Modal",
+    //     object3DFileName: path2,
+    //     position: hit.pose.translation,
+    //     rotation: hit.pose.rotation,
+    //   ),
+    // );
+    final material = ArCoreMaterial(color: _color);
+    final sphere = ArCoreSphere(materials: [material], radius: 0.2);
+    final node = ArCoreNode(
+        name: "Sun", shape: sphere, position: vector.Vector3(0, 0, -1));
+    arCoreController.addArCoreNodeWithAnchor(
+      ArCoreReferenceNode(
+        name: "Etho",
+        children: [node],
+        position: hit.pose.translation,
+        rotation: hit.pose.rotation,
+      ),
+    );
   }
 
   @override
@@ -92,7 +96,8 @@ class _ARPageState extends State<ARPage> {
   Widget build(BuildContext context) {
     index = ModalRoute.of(context).settings.arguments;
     path = Provider.of<TopicProvider>(context).audioPath(index);
-    path2 = Provider.of<TopicProvider>(context).modelPath(index);
+    _color = Provider.of<TopicProvider>(context).modelPath(index);
+
     initAudioPlayer();
     return index == -1
         ? Scaffold()
@@ -112,7 +117,6 @@ class _ARPageState extends State<ARPage> {
                 ),
                 Positioned(
                   bottom: 0,
-                  top: MediaQuery.of(context).size.height - 120,
                   child: Column(
                     children: [
                       if (flag) Text("Place the modal in a flat surface"),
