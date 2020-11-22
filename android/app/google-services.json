@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "51501034990",
+    "firebase_url": "https://zeromark-1704b.firebaseio.com",
+    "project_id": "zeromark-1704b",
+    "storage_bucket": "zeromark-1704b.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:51501034990:android:07bd2068e3c0c9a94e32ff",
+        "android_client_info": {
+          "package_name": "com.example.zeromark"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "51501034990-8q5jj08k7kdule9giecll7rl7m4cgh6b.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBmIEbkRXHs6bvDdrDTebOyO60JqjOYryk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "51501034990-8q5jj08k7kdule9giecll7rl7m4cgh6b.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -20,6 +20,7 @@ class _ARPageState extends State<ARPage> {
   String path = "";
   String path2 = "";
   Color _color = Colors.white;
+  int count = 0;
 
   @override
   initState() {
@@ -54,7 +55,8 @@ class _ARPageState extends State<ARPage> {
       flag = false;
       audioPlayer.play();
     } else {
-      arCoreController.removeNodeWithIndex(0);
+      arCoreController.removeNode(nodeName: "Sun");
+      audioPlayer.pause();
       flag = true;
     }
     setState(() {});
@@ -62,10 +64,12 @@ class _ARPageState extends State<ARPage> {
 
   _addSphere(List<ArCoreHitTestResult> hits) {
     final hit = hits.first;
+
     // arCoreController.addArCoreNodeWithAnchor(
     //   ArCoreReferenceNode(
     //     name: "Modal",
-    //     object3DFileName: path2,
+    //     objectUrl: "",
+    //     // object3DFileName: path2,
     //     position: hit.pose.translation,
     //     rotation: hit.pose.rotation,
     //   ),
@@ -73,15 +77,12 @@ class _ARPageState extends State<ARPage> {
     final material = ArCoreMaterial(color: _color);
     final sphere = ArCoreSphere(materials: [material], radius: 0.2);
     final node = ArCoreNode(
-        name: "Sun", shape: sphere, position: vector.Vector3(0, 0, -1));
-    arCoreController.addArCoreNodeWithAnchor(
-      ArCoreReferenceNode(
-        name: "Etho",
-        children: [node],
-        position: hit.pose.translation,
-        rotation: hit.pose.rotation,
-      ),
+      name: "Sun",
+      shape: sphere,
+      position: hit.pose.translation + vector.Vector3(0, 0, -1.5),
     );
+    arCoreController.addArCoreNodeWithAnchor(node);
+    setState(() {});
   }
 
   @override
@@ -97,8 +98,10 @@ class _ARPageState extends State<ARPage> {
     index = ModalRoute.of(context).settings.arguments;
     path = Provider.of<TopicProvider>(context).audioPath(index);
     _color = Provider.of<TopicProvider>(context).modelPath(index);
-
-    initAudioPlayer();
+    if (count == 0) {
+      initAudioPlayer();
+      count+=1;
+    }
     return index == -1
         ? Scaffold()
         : WillPopScope(

@@ -26,6 +26,8 @@ dependencies:
   arcore_flutter_plugin: ^0.0.8
   provider: ^4.3.2+2
   assets_audio_player: ^2.0.13
+  cloud_firestore: ^0.14.3
+  firebase_storage: ^5.0.1
 
 
   # The following adds the Cupertino Icons font to your application.
@@ -59,9 +61,6 @@ flutter:
     - assets/audios/sun.mp3
     - assets/audios/jupiter.mp3
     - assets/audios/uranus.mp3
-    - assets/models/atom.obj
-    - assets/models/Space.glb
-    - assets/models/Windmill.3mf
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
