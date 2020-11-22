@@ -17,6 +17,8 @@ class _HomeScreenState extends State<HomeScreen> {
     Future.delayed(Duration(seconds: 0), () {
       try {
         Provider.of<TopicProvider>(context, listen: false).fetch();
+        _isLoading = false;
+        setState(() {});
       } catch (e) {
         showDialog<void>(
           context: context,
