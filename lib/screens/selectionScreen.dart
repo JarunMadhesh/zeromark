@@ -1,7 +1,6 @@
-import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:zeromark/providers/topic.dart';
+import 'package:zeromark/providers/fromFB.dart';
 import 'package:zeromark/screens/ar.dart';
 
 class SelectionScreen extends StatefulWidget {
@@ -51,7 +50,7 @@ class _SelectionScreenState extends State<SelectionScreen> {
                       title: Padding(
                         padding:
                             EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-                        child: Text(_topics[i].topic),
+                        child: Text(_topics[i].name),
                       ),
                     ),
                   ),

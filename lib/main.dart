@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:zeromark/providers/topic.dart';
+import 'package:zeromark/providers/fromFB.dart';
 import 'package:zeromark/screens/ar.dart';
 import 'package:provider/provider.dart';
 import 'package:zeromark/screens/homeScreen.dart';
@@ -20,7 +20,7 @@ class MyApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider<TopicProvider>(
           create: (_) => TopicProvider(),
-        )
+        ),
       ],
       child: MaterialApp(
         title: "Zero Mark",

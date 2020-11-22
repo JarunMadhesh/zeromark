@@ -1,9 +1,9 @@
 import "package:arcore_flutter_plugin/arcore_flutter_plugin.dart";
-import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:vector_math/vector_math_64.dart' as vector;
-import 'package:zeromark/providers/topic.dart';
+import 'package:audioplayers/audioplayers.dart';
+import 'package:zeromark/providers/fromFB.dart';
 
 class ARPage extends StatefulWidget {
   static const route = "/ArPage";
@@ -13,26 +13,23 @@ class ARPage extends StatefulWidget {
 
 class _ARPageState extends State<ARPage> {
   ArCoreController arCoreController;
-  AssetsAudioPlayer audioPlayer;
   bool flag = true;
   int index = -1;
-  String title = "asd";
-  String path = "";
-  String path2 = "";
-  Color _color = Colors.white;
+  Topic topic;
   int count = 0;
+  AudioPlayer advancedPlayer;
+  bool _isPlaying = false;
 
   @override
   initState() {
     super.initState();
-    audioPlayer = AssetsAudioPlayer();
+    advancedPlayer = AudioPlayer();
+    topic = Topic("", "", "");
   }
 
   initAudioPlayer() {
-    audioPlayer.open(
-      Audio(path),
-    );
-    audioPlayer.stop();
+    advancedPlayer.setUrl(topic.audio);
+    advancedPlayer.setReleaseMode(ReleaseMode.STOP);
   }
 
   _onArKitViewCreated(ArCoreController controller) {
@@ -45,7 +42,7 @@ class _ARPageState extends State<ARPage> {
     showDialog<void>(
       context: context,
       builder: (BuildContext context) =>
-          AlertDialog(content: Text('onNodeTap on $name')),
+          AlertDialog(content: Text('Tapped on ${topic.name}')),
     );
   }
 
@@ -53,60 +50,53 @@ class _ARPageState extends State<ARPage> {
     if (flag) {
       _addSphere(hits);
       flag = false;
-      audioPlayer.play();
+      advancedPlayer.resume();
+      _isPlaying = true;
     } else {
-      arCoreController.removeNode(nodeName: "Sun");
-      audioPlayer.pause();
+      arCoreController.removeNode(nodeName: topic.name);
+      advancedPlayer.pause();
+      _isPlaying = false;
       flag = true;
     }
     setState(() {});
   }
 
-  _addSphere(List<ArCoreHitTestResult> hits) {
+  _addSphere(List<ArCoreHitTestResult> hits) async {
     final hit = hits.first;
 
-    // arCoreController.addArCoreNodeWithAnchor(
-    //   ArCoreReferenceNode(
-    //     name: "Modal",
-    //     objectUrl: "",
-    //     // object3DFileName: path2,
-    //     position: hit.pose.translation,
-    //     rotation: hit.pose.rotation,
-    //   ),
-    // );
-    final material = ArCoreMaterial(color: _color);
-    final sphere = ArCoreSphere(materials: [material], radius: 0.2);
-    final node = ArCoreNode(
-      name: "Sun",
-      shape: sphere,
-      position: hit.pose.translation + vector.Vector3(0, 0, -1.5),
+    await arCoreController.addArCoreNodeWithAnchor(
+      ArCoreReferenceNode(
+        name: topic.audio,
+        objectUrl: topic.model,
+        position: hit.pose.translation + vector.Vector3(0, 0, -1.5),
+        scale: vector.Vector3(0.1, 0.1, 0.1),
+        rotation: hit.pose.rotation,
+      ),
     );
-    arCoreController.addArCoreNodeWithAnchor(node);
     setState(() {});
   }
 
   @override
   void dispose() {
     if (arCoreController != null) arCoreController.dispose();
-    audioPlayer.stop();
-    if (audioPlayer != null) audioPlayer.dispose();
+    advancedPlayer.stop();
+    if (advancedPlayer != null) advancedPlayer.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     index = ModalRoute.of(context).settings.arguments;
-    path = Provider.of<TopicProvider>(context).audioPath(index);
-    _color = Provider.of<TopicProvider>(context).modelPath(index);
+    topic = Provider.of<TopicProvider>(context).getTopic(index);
     if (count == 0) {
       initAudioPlayer();
-      count+=1;
+      count += 1;
     }
     return index == -1
         ? Scaffold()
         : WillPopScope(
             onWillPop: () async {
-              audioPlayer.stop();
+              advancedPlayer.stop();
               return true;
             },
             child: Scaffold(
@@ -132,7 +122,7 @@ class _ARPageState extends State<ARPage> {
                           children: [
                             IconButton(
                               onPressed: () {
-                                audioPlayer.seekBy(Duration(seconds: -10));
+                                advancedPlayer.seek(Duration(seconds: -10));
                               },
                               icon: Text(
                                 "-10s",
@@ -141,30 +131,29 @@ class _ARPageState extends State<ARPage> {
                               ),
                               iconSize: 60,
                             ),
-                            PlayerBuilder.isPlaying(
-                              player: audioPlayer,
-                              builder: (context, isPlaying) {
-                                if (isPlaying) {
-                                  return IconButton(
+                            _isPlaying
+                                ? IconButton(
                                     icon: Icon(Icons.pause),
                                     iconSize: 60,
                                     onPressed: () {
-                                      audioPlayer.pause();
+                                      advancedPlayer.pause();
+
+                                      _isPlaying = false;
                                     },
-                                  );
-                                }
-                                return IconButton(
-                                  icon: Icon(Icons.play_arrow),
-                                  iconSize: 60,
-                                  onPressed: () {
-                                    audioPlayer.play();
-                                  },
-                                );
-                              },
-                            ),
+                                  )
+                                : IconButton(
+                                    icon: Icon(Icons.play_arrow),
+                                    iconSize: 60,
+                                    onPressed: () {
+                                      if (!flag) {
+                                        advancedPlayer.resume();
+                                        _isPlaying = true;
+                                      }
+                                    },
+                                  ),
                             IconButton(
                               onPressed: () {
-                                audioPlayer.seekBy(Duration(seconds: 10));
+                                advancedPlayer.seek(Duration(seconds: 10));
                               },
                               icon: Text(
                                 "+10s",
